@@ -1,0 +1,21 @@
+@startuml
+title 図書管理システム(Usecase Diagram)
+
+left to right direction
+
+actor :管理者: as admin
+actor :ユーザー: as user
+rectangle "システム" {
+    usecase "本を追加" as addBook
+    usecase "本を削除" as removeBook
+    usecase "本を借りる" as rentBook
+    usecase "本を返す" as returnBook
+}
+
+admin --> addBook
+admin --> removeBook
+user --> rentBook
+user --> returnBook
+
+@enduml
+

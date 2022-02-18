@@ -1,0 +1,13 @@
+@startuml
+title 図書管理システム（State Diagram）
+
+[*] --> AVAILABLE: 本を追加
+AVAILABLE --> RENTED: 本を借りる
+RENTED --> AVAILABLE: 本を返す
+
+AVAILABLE --> DELETED: 本を削除
+RENTED --> DELETED: 本を削除
+
+DELETED --> [*]
+
+@enduml
