@@ -1,0 +1,8 @@
+CREATE DATABASE `sample` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+
+CREATE USER 'sample_user'@'%' IDENTIFIED BY 'sample_password!';
+
+GRANT ALL PRIVILEGES ON `sample`.* TO 'sample_user'@'%';
+
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
