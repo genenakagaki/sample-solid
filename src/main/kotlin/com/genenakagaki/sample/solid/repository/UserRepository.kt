@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 class UserRepository(val db: DSLContext) {
 
     fun selectByUsername(username: String): Map<String, String> {
-        val result = db.fetch(
+        val record = db.fetch(
             """
             SELECT username, role FROM app_user 
             WHERE username = ?
@@ -15,8 +15,9 @@ class UserRepository(val db: DSLContext) {
         )[0]
 
         return mapOf(
-            "username" to result.get("username") as String,
-            "role" to result.get("role") as String
+            "username" to record.get("username") as String,
+            "role" to record.get("role") as String
         )
+
     }
 }
