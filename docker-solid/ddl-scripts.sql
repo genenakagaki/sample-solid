@@ -26,44 +26,24 @@ CREATE TABLE book_price
     PRIMARY KEY (`book_id`)
 );
 
-DROP TABLE IF EXISTS book_inventory;
-CREATE TABLE book_inventory
+DROP TABLE IF EXISTS book_copy;
+CREATE TABLE book_copy
 (
-    book_inventory_id INT NOT NULL AUTO_INCREMENT,
+    book_copy_id INT NOT NULL AUTO_INCREMENT,
     book_id INT NOT NULL,
-    book_inventory_state VARCHAR(255) NOT NULL,
+    book_copy_state VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (`book_inventory_id`)
+    PRIMARY KEY (`book_copy_id`)
 );
 
-DROP TABLE IF EXISTS book_inventory_rented;
-CREATE TABLE book_inventory_rented
+DROP TABLE IF EXISTS book_copy_rental_history;
+CREATE TABLE book_copy_rental_history
 (
-    book_inventory_id INT NOT NULL AUTO_INCREMENT,
+    book_copy_id INT NOT NULL,
+    rented_at DATETIME NOT NULL,
     username VARCHAR(255) NOT NULL,
     return_due_at DATETIME NOT NULL,
-    rented_at DATETIME NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (`book_inventory_id`)
-);
-
-DROP TABLE IF EXISTS book_inventory_rent_history;
-CREATE TABLE book_inventory_rent_history
-(
-    book_inventory_rent_history_id INT NOT NULL AUTO_INCREMENT,
-    book_inventory_id INT NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    return_due_at DATETIME NOT NULL,
-    rented_at DATETIME NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (`book_inventory_rent_history_id`)
-);
-
-DROP TABLE IF EXISTS book_inventory_return_history;
-CREATE TABLE book_inventory_return_history
-(
-    book_inventory_return_history_id INT NOT NULL AUTO_INCREMENT,
-    book_inventory_id INT NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    returned_at DATETIME NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (`book_inventory_return_history_id`)
+    returned_at DATETIME NOT NULL,
+    PRIMARY KEY (`book_copy_id`, `rented_at`)
 );
 
