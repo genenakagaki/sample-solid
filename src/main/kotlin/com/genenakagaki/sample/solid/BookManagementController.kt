@@ -13,62 +13,35 @@ class BookManagementController(
     val userRepository: UserRepository,
 ) {
 
-    @PostMapping("/api/book/add")
-    fun addBook(@RequestBody body: Map<String, String>) {
-        val userData = userRepository.selectByUsername(body["username"]!!)
-        if (userData["role"] != "ADMIN") {
-            throw UnauthorizedException()
-        }
-
-        bookRepository.insert(body["title"]!!)
-    }
-
     @PostMapping("/api/book/rent")
     fun rentBook(@RequestBody body: Map<String, String>) {
-        val userData = userRepository.selectByUsername(body["username"]!!)
-        if (userData["role"] != "ADMIN") {
-            throw UnauthorizedException()
+        val username = body["username"]!!
+        val user = userRepository.findByUsername(username)
+            ?: throw CustomException("ユーザーが見つかりませんでした。")
+
+        val currentRentalList = bookRepository.findCurrentRentalList(username)
+
+        if (currentRentalList.any { r -> r["book_id"] == body["book_id"] }) {
+            throw CustomException("既に借りてます。")
         }
 
-        val bookInventoryList = bookRepository.selectInventory(body["bookId"]!!.toInt(), "AVAILABLE")
-        if (bookInventoryList.isEmpty()) {
-            throw Exception()
+        val bookPrice = bookRepository.findBookPrice(body["book_id"]!!.toInt())
+            ?: throw CustomException("本がみつかりませんでした。")
+
+        if (user["credit"]!!.toInt() < bookPrice["rent_price"]!!.toInt()) {
+            throw CustomException("お金が足りません。")
         }
 
-        val bookInventory = bookInventoryList.first()
+        val updatedUserCredit = user["credit"]!!.toInt() - bookPrice["rent_price"]!!.toInt()
+        userRepository.updateUserCredit(username, updatedUserCredit)
 
-        bookRepository.insertRentData(
-            bookInventory["book_inventory_id"]!!.toInt(),
-            body["username"]!!,
-            LocalDateTime.now().plusDays(7)
+        val rentalData = mapOf(
+            "username" to username,
+            "book_id" to body["book_id"]!!,
+            "rented_at" to LocalDateTime.now().toString(),
+            "rent_until" to LocalDateTime.now().plusDays(7).toString()
         )
+
+        bookRepository.insertRentalData(rentalData);
     }
-
-    @PostMapping("/api/book/return")
-    fun returnBook(@RequestBody body: Map<String, String>) {
-        val userData = userRepository.selectByUsername(body["username"]!!)
-        if (userData["role"] != "ADMIN") {
-            throw UnauthorizedException()
-        }
-
-        val userRentedBookList = bookRepository.selectInventoryRented(body["username"]!!)
-
-        var bookToReturn: Map<String, String>? = null
-        for (rentedBook in userRentedBookList) {
-            if (rentedBook["book_inventory_id"] == body["bookInventoryId"]) {
-                bookToReturn = rentedBook
-            }
-        }
-
-        if (bookToReturn == null) {
-            throw Exception("このユーザーはこの本を借りてません。")
-        }
-
-        bookRepository.insertReturnData(
-            bookToReturn["book_inventory_id"]!!.toInt(),
-            body["username"]!!
-        )
-    }
-
-
 }

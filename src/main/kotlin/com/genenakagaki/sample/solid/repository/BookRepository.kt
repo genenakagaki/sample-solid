@@ -16,86 +16,58 @@ class BookRepository(val db: DSLContext) {
         )
     }
 
-    fun selectInventory(bookId: Int, state: String): List<Map<String, String>> {
-        val recordList = db.fetch(
+    fun findBookPrice(bookId: Int): MutableMap<String, String>? {
+        val bookPriceRecord = db.fetch(
             """
-            SELECT book_inventory_id, book_id, book_inventory_state FROM book_inventory
+            SELECT rent_price, buy_price FROM book_price
             WHERE book_id = ?
-            AND book_inventory_state = ?
-        """.trimIndent(), bookId, state
-        )
+        """.trimIndent(), bookId
+        ).firstOrNull() ?: return null
 
-        return recordList.map {
-            mapOf(
-                "book_inventory_id" to it.get("book_inventory_id") as String,
+        return bookPriceRecord.map {
+            mutableMapOf(
+                "rent_price" to it.get("rent_price") as String,
+                "buy_price" to it.get("buy_price") as String,
+            )
+        }
+    }
+
+    fun findCurrentRentalList(username: String): MutableList<MutableMap<String, String>> {
+        return db.fetch(
+            """
+            SELECT book_id, rented_at, rent_until FROM app_user_book_rental_current
+            WHERE username = ?
+        """.trimIndent(), username
+        ).map {
+            mutableMapOf(
                 "book_id" to it.get("book_id") as String,
-                "book_inventory_state" to it.get("book_inventory_state") as String
+                "rented_at" to it.get("rented_at") as String,
+                "rent_until" to it.get("rent_until") as String
             )
         }
     }
 
-    fun selectInventoryRented(username: String): List<Map<String, String>> {
-        val recordList = db.fetch(
-            """
-                    SELECT book_inventory_id, username, return_due_at FROM book_inventory_rented
-                    WHERE username = ?
-                """.trimIndent(), username
-        )
-
-        return recordList.map {
-            mapOf(
-                "book_inventory_id" to it.get("book_inventory_id") as String,
-                "username" to it.get("username") as String,
-                "return_due_at" to it.get("return_due_at") as String
-            )
-        }
-    }
-
-    fun insertRentData(bookInventoryId: Int, username: String, returnDueAt: LocalDateTime) {
+    fun insertRentalData(rentalData: Map<String, String>) {
         db.execute(
             """
-                INSERT INTO book_inventory_rented(`book_inventory_id`, `username`, `return_due_at`)
-                VALUES (?, ?, ?)
-        """.trimIndent(), bookInventoryId, username, returnDueAt
+            INSERT INTO app_user_book_rental_current(`username`, `book_id`, `rented_at`, `rent_until`)
+            VALUES (?, ?, ?, ?)
+        """.trimIndent(),
+            rentalData["username"],
+            rentalData["book_id"],
+            rentalData["rented_at"],
+            rentalData["rent_until"]
         )
 
         db.execute(
             """
-                INSERT INTO book_inventory_rent_history(`book_inventory_id`, `username`, `return_due_at`)
-                VALUES (?, ?, ?)
-        """.trimIndent(), bookInventoryId, username, returnDueAt
-        )
-
-        db.execute(
-            """
-                UPDATE book_inventory 
-                SET book_inventory_state = 'RENTED'
-                WHERE book_inventory_id = ?
-        """.trimIndent(), bookInventoryId
-        )
-    }
-
-    fun insertReturnData(bookInventoryId: Int, username: String) {
-        db.execute(
-            """
-                INSERT INTO book_inventory_return_history(`book_inventory_id`, `username`)
-                VALUES (?, ?)
-        """.trimIndent(), bookInventoryId, username
-        )
-
-        db.execute(
-            """
-            DELETE FROM book_inventory_rented
-            WHERE book_inventory_id = ?
-        """.trimIndent(), bookInventoryId
-        )
-
-        db.execute(
-            """
-                UPDATE book_inventory 
-                SET book_inventory_state = 'AVAILABLE'
-                WHERE book_inventory_id = ?
-        """.trimIndent(), bookInventoryId
+            INSERT INTO app_user_book_rental_history(`username`, `book_id`, `rented_at`, `rent_until`)
+            VALUES (?, ?, ?, ?)
+        """.trimIndent(),
+            rentalData["username"],
+            rentalData["book_id"],
+            rentalData["rented_at"],
+            rentalData["rent_until"]
         )
     }
 }

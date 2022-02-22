@@ -6,18 +6,28 @@ import org.springframework.stereotype.Repository
 @Repository
 class UserRepository(val db: DSLContext) {
 
-    fun selectByUsername(username: String): Map<String, String> {
+    fun findByUsername(username: String): MutableMap<String, String>? {
         val record = db.fetch(
             """
-            SELECT username, role FROM app_user 
+            SELECT username, role, credit FROM app_user 
             WHERE username = ?
         """.trimIndent(), username
-        )[0]
+        ).firstOrNull() ?: return null
 
-        return mapOf(
+        return mutableMapOf(
             "username" to record.get("username") as String,
-            "role" to record.get("role") as String
+            "role" to record.get("role") as String,
+            "credit" to record.get("credit") as String,
         )
+    }
 
+    fun updateUserCredit(username: String, userCredit: Int) {
+        db.execute(
+            """
+            UPDATE app_user
+            SET credit = ?
+            WHERE username = ?
+        """.trimIndent(), userCredit, username
+        )
     }
 }
