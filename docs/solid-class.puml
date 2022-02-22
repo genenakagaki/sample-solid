@@ -1,0 +1,37 @@
+@startuml
+title 図書管理システム（Class Diagram）
+
+class BookController {
+    + rentBook()
+    + returnBook()
+}
+
+class BookRentalService {
+    + rentBook(username, bookId)
+    + returnBook(username, bookCopyId)
+}
+
+BookController --> BookRentalService
+
+class BookCopyRentalEntity {
+    + bookCopyId
+    + state
+    + rentalHistory
+    + isAvailable
+    + lastRentalHistoryItem
+    + rentBook(username)
+    + returnBook(username)
+}
+
+BookRentalService --> BookCopyRentalEntity
+
+class BookCopyRentalHistoryItem {
+    + rentedAt
+    + username
+    + returnDueAt
+    + returnedAt
+}
+
+BookCopyRentalEntity --> BookCopyRentalHistoryItem
+
+@enduml

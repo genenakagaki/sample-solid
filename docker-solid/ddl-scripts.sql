@@ -3,8 +3,31 @@ CREATE TABLE app_user
 (
     username VARCHAR(255) NOT NULL,
     role VARCHAR(255) NOT NULL,
+    credit INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`username`)
+);
+
+DROP TABLE IF EXISTS app_user_book_rental_current;
+CREATE TABLE app_user_book_rental_current
+(
+    username VARCHAR(255) NOT NULL,
+    rental_index INT NOT NULL,
+    book_id INT NOT NULL,
+    rented_at DATETIME NOT NULL,
+    rent_until DATETIME NOT NULL,
+    PRIMARY KEY (`username`, `rental_index`)
+);
+
+DROP TABLE IF EXISTS app_user_book_rental_history;
+CREATE TABLE app_user_book_rental_history
+(
+    username VARCHAR(255) NOT NULL,
+    history_index INT NOT NULL,
+    book_id INT NOT NULL,
+    rented_at DATETIME NOT NULL,
+    rent_until DATETIME NOT NULL,
+    PRIMARY KEY (`username`, `history_index`)
 );
 
 DROP TABLE IF EXISTS book;
@@ -25,25 +48,3 @@ CREATE TABLE book_price
     created_at DATETIME NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`book_id`)
 );
-
-DROP TABLE IF EXISTS book_copy;
-CREATE TABLE book_copy
-(
-    book_copy_id INT NOT NULL AUTO_INCREMENT,
-    book_id INT NOT NULL,
-    book_copy_state VARCHAR(255) NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (`book_copy_id`)
-);
-
-DROP TABLE IF EXISTS book_copy_rental_history;
-CREATE TABLE book_copy_rental_history
-(
-    book_copy_id INT NOT NULL,
-    rented_at DATETIME NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    return_due_at DATETIME NOT NULL,
-    returned_at DATETIME NOT NULL,
-    PRIMARY KEY (`book_copy_id`, `rented_at`)
-);
-

@@ -1,0 +1,28 @@
+@startuml
+title SOLID
+
+rectangle controller [
+Controller層
+責務: HttpRequestのハンドリング
+]
+
+rectangle service [
+Service層
+責務: ドメインロジックの処理実行とデータの反映
+]
+
+rectangle repository [
+Repository層
+責務: データの取得・永続化
+]
+
+rectangle domain [
+Domain層
+責務: ビジネスロジックの処理
+]
+
+controller --> service
+service -> domain
+service --> repository
+
+@enduml
