@@ -5,6 +5,16 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
+class RentBookFormModel(
+    val username: String,
+    val bookId: Int,
+)
+
+class ReturnBookFormModel(
+    val username: String,
+    val bookCopyId: Int,
+)
+
 @RestController
 class BookController(
     private val bookRentalService: BookRentalService,
@@ -17,6 +27,6 @@ class BookController(
 
     @PostMapping("/api/book/return")
     fun returnBook(@RequestBody formModel: ReturnBookFormModel) {
-        bookRentalService.returnBook(formModel.username, formModel.bookCopyId)
+        bookRentalService.applyRentalPeriod()
     }
 }
