@@ -16,4 +16,10 @@ class ExceptionHandlerController {
     fun handleException(e: UnauthorizedException): Mono<String> {
         return Mono.just("Unauthorized")
     }
+
+    @ExceptionHandler(CustomException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleException(e: CustomException): Mono<String> {
+        return Mono.just(e.message ?: "")
+    }
 }
