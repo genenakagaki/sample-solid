@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import reactor.core.publisher.Mono
 
-class UnauthorizedException(): Exception()
+class UnauthorizedException() : Exception()
+class CustomException(message: String) : Exception(message)
 
 @RestControllerAdvice
 class ExceptionHandlerController {
