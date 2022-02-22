@@ -13,6 +13,13 @@ class BookManagementController(
     val userRepository: UserRepository,
 ) {
 
+    /**
+     * bodyのサンプルデータ
+     * {
+     *   username: "g-nakagaki",
+     *   book_id: "1"
+     * }
+     */
     @PostMapping("/api/book/rent")
     fun rentBook(@RequestBody body: Map<String, String>) {
         val username = body["username"]!!
@@ -21,8 +28,10 @@ class BookManagementController(
 
         val currentRentalList = bookRepository.findCurrentRentalList(username)
 
-        if (currentRentalList.any { r -> r["book_id"] == body["book_id"] }) {
-            throw CustomException("既に借りてます。")
+        for (item in currentRentalList) {
+            if (item["book_id"] == body["book_id"]) {
+                throw CustomException("既に借りてます。")
+            }
         }
 
         val bookPrice = bookRepository.findBookPrice(body["book_id"]!!.toInt())

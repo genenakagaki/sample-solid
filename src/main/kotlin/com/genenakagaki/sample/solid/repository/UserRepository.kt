@@ -6,6 +6,13 @@ import org.springframework.stereotype.Repository
 @Repository
 class UserRepository(val db: DSLContext) {
 
+    /**
+     * {
+     *     username: "g-nakagaki",
+     *     role: "USER",
+     *     credit: "1000"
+     * }
+     */
     fun findByUsername(username: String): MutableMap<String, String>? {
         val record = db.fetch(
             """

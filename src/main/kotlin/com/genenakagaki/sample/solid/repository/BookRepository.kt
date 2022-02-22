@@ -16,6 +16,13 @@ class BookRepository(val db: DSLContext) {
         )
     }
 
+    /**
+     * サンプルデータ
+     * {
+     *   rent_price: 100,
+     *   buy_price: 1000
+     * }
+     */
     fun findBookPrice(bookId: Int): MutableMap<String, String>? {
         val bookPriceRecord = db.fetch(
             """
@@ -32,6 +39,14 @@ class BookRepository(val db: DSLContext) {
         }
     }
 
+    /**
+     * サンプルデータ
+     * {
+     *   book_id: 1,
+     *   rented_at: 2022-01-01
+     *   rent_until: 2022-01-01
+     * }
+     */
     fun findCurrentRentalList(username: String): MutableList<MutableMap<String, String>> {
         return db.fetch(
             """
