@@ -11,23 +11,23 @@ CREATE TABLE app_user
 DROP TABLE IF EXISTS app_user_book_rental_current;
 CREATE TABLE app_user_book_rental_current
 (
+    id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
-    rental_index INT NOT NULL,
     book_id INT NOT NULL,
     rented_at DATETIME NOT NULL,
     rent_until DATETIME NOT NULL,
-    PRIMARY KEY (`username`, `rental_index`)
+    PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS app_user_book_rental_history;
 CREATE TABLE app_user_book_rental_history
 (
+    id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
-    history_index INT NOT NULL,
     book_id INT NOT NULL,
     rented_at DATETIME NOT NULL,
     rent_until DATETIME NOT NULL,
-    PRIMARY KEY (`username`, `history_index`)
+    PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS book;
