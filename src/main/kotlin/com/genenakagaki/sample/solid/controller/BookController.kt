@@ -10,11 +10,6 @@ class RentBookFormModel(
     val bookId: Int,
 )
 
-class ReturnBookFormModel(
-    val username: String,
-    val bookCopyId: Int,
-)
-
 @RestController
 class BookController(
     private val bookRentalService: BookRentalService,
@@ -25,8 +20,4 @@ class BookController(
         bookRentalService.rentBook(formModel.username, formModel.bookId)
     }
 
-    @PostMapping("/api/book/return")
-    fun returnBook(@RequestBody formModel: ReturnBookFormModel) {
-        bookRentalService.applyRentalPeriod()
-    }
 }

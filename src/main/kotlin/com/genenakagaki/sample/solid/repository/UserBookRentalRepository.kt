@@ -75,21 +75,21 @@ class UserBookRentalRepositoryImpl(
         """.trimIndent(), model.username
         )
 
-        model.currentRentalList.forEachIndexed { index, entry ->
+        model.currentRentalList.forEach { entry ->
             db.execute(
                 """
-            INSERT INTO app_user_book_rental_current(`username`, `rental_index`, `book_id`, `rented_at`, `rent_until`)
-            VALUES (?, ?, ?, ?, ?)
-        """.trimIndent(), model.username, index, entry.bookId, entry.rentedAt, entry.rentUntil
+            INSERT INTO app_user_book_rental_current(`username`, `book_id`, `rented_at`, `rent_until`)
+            VALUES (?, ?, ?, ?)
+        """.trimIndent(), model.username, entry.bookId, entry.rentedAt, entry.rentUntil
             )
         }
 
-        model.rentalHistory.forEachIndexed { index, entry ->
+        model.rentalHistory.forEach { entry ->
             db.execute(
                 """
-            INSERT INTO app_user_book_rental_history(`username`, `history_index`, `book_id`, `rented_at`, `rent_until`)
-            VALUES (?, ?, ?, ?, ?)
-        """.trimIndent(), model.username, index, entry.bookId, entry.rentedAt, entry.rentUntil
+            INSERT INTO app_user_book_rental_history(`username`, `book_id`, `rented_at`, `rent_until`)
+            VALUES (?, ?, ?, ?)
+        """.trimIndent(), model.username, entry.bookId, entry.rentedAt, entry.rentUntil
             )
         }
     }
