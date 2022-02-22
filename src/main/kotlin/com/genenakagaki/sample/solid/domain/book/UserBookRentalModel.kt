@@ -9,7 +9,13 @@ class UserBookRentalModel(
     var rentalHistory: MutableList<UserBookRentalEntry>
 ) {
     private fun isBookRented(bookId: Int): Boolean {
-        return currentRentalList.any { r -> r.bookId == bookId }
+        for (rental in currentRentalList) {
+            if (rental.bookId == bookId) {
+                return true
+            }
+        }
+
+        return false
     }
 
     fun rentBook(bookId: Int, bookPrice: BookPrice) {
