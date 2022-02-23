@@ -78,7 +78,7 @@ class BookRentalController(
      */
     @PostMapping("/api/book/rent")
     fun rentBook(@RequestBody body: Map<String, String>) {
-        val username = body["username"]!!
+        val username = body["username"]
 
         // 今レンタル中のリスト
         // [
@@ -104,8 +104,8 @@ class BookRentalController(
 
         // レンタルしたい本の金額
         // {
-        //    rent_price: 100,
-        //    buy_price: 1000
+        //   rent_price: 100,
+        //   buy_price: 1000
         // }
         val bookPrice = db.fetch(
             """
@@ -120,10 +120,10 @@ class BookRentalController(
 
         // ユーザーデータ
         // {
-        //     username: "g-nakagaki",
-        //     email: "g-nakagaki@email.com",
-        //     role: "USER",
-        //     credit: "1000"
+        //   username: "g-nakagaki",
+        //   email: "g-nakagaki@email.com",
+        //   role: "USER",
+        //   credit: "1000"
         // }
         val user = db.fetch(
             """
