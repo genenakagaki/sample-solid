@@ -1,13 +1,12 @@
 package com.genenakagaki.sample.solid
 
 import org.jooq.DSLContext
+import org.springframework.http.HttpStatus
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
-
 
 @RestController
 class BookRentalController(
@@ -44,7 +43,7 @@ class BookRentalController(
         // 既にレンタルしてるかどうかのチェック
         for (book in currentRentalList) {
             if (book["book_id"] == body["book_id"]) {
-                throw CustomException("この本は既にレンタル中です。")
+                throw RuntimeException("この本は既にレンタル中です。")
             }
         }
 
@@ -61,7 +60,7 @@ class BookRentalController(
         ).intoMaps().first()
 
         if (bookPrice == null) {
-            throw CustomException("本がみつかりませんでした。")
+            throw RuntimeException("本がみつかりませんでした。")
         }
 
         // ユーザーデータ
@@ -79,12 +78,12 @@ class BookRentalController(
         ).intoMaps().first()
 
         if (user == null) {
-            throw CustomException("ユーザーが見つかりませんでした。")
+            throw RuntimeException("ユーザーが見つかりませんでした。")
         }
 
         // ユーザーのお金が足りるかどうかのチェック
         if (user["credit"].int() < bookPrice["rent_price"].int()) {
-            throw CustomException("お金が足りません。")
+            throw RuntimeException("お金が足りません。")
         }
 
         // ユーザーのお金から貸し出し金額を引く
@@ -137,5 +136,11 @@ class BookRentalController(
             本のレンタルが完了したので読めますよ。
         """)
         mailSender.send(message)
+    }
+
+    @ExceptionHandler(RuntimeException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleException(e: RuntimeException): Mono<String> {
+        return Mono.just(e.message ?: "")
     }
 }
