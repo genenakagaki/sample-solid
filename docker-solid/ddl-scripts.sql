@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS app_user;
 CREATE TABLE app_user
 (
     username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     role VARCHAR(255) NOT NULL,
     credit INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT NOW(),
