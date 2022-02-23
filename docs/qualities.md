@@ -1,0 +1,31 @@
+# Measuring the quality of code
+
+Maintainability
+- Single Responsibility Principle
+  - does the class have only one responsibility?
+  - Examples: 
+    - Layered architecture
+  - Situations: 
+    - Testability
+    - Reusability
+    - Maintainability: 変えてないことろもチェックする必要がある
+- Open Closed Principle
+  - is the class open for extension
+  - is the class closed for modification
+  - Examples: 
+    - Strongly typed system
+    - Campaign book rental
+- Liskov Substitution Principle
+  - does the child class still behave the same as the parent?
+  - Examples: 
+- Interface Segregation Principle
+  - do you have to implement useless methods?
+  - Examples: 
+    - Premium user
+- Dependency Inversion Principle
+  - are you depending on abstractions?
+  - are you depending on concrete implementations
+  - Examples: 
+    - Repos
+    - Premium User?
+- コード書くときの手間

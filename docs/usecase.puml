@@ -3,17 +3,15 @@ title 図書管理システム(Usecase Diagram)
 
 left to right direction
 
-actor :管理者: as admin
 actor :ユーザー: as user
+actor :定期実行システム: as batch
 rectangle "システム" {
-    usecase "本を追加" as addBook
-    usecase "本を借りる" as rentBook
-    usecase "本を返す" as returnBook
+    usecase "本のレンタル開始" as rentBook
+    usecase "本のレンタル終了" as endBookRental
 }
 
-admin --> addBook
 user --> rentBook
-user --> returnBook
+batch --> endBookRental
 
 @enduml
 
