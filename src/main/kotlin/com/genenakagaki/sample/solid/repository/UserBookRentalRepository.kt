@@ -17,7 +17,7 @@ class UserBookRentalRepository(
         val user = userRepository.findByUsername(username)
 
         if (user == null) {
-            return null;
+            return null
         }
 
         val currentRentalList = db.fetch(
