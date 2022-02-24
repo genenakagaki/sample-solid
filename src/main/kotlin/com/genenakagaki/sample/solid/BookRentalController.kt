@@ -21,6 +21,61 @@ class BookRentalController(
      *   book_id: "1"
      * }
      */
+    @GetMapping("/api/book/view")
+    fun viewBook(@RequestBody body: Map<String, String>): Mono<Any?> {
+        // 今レンタル中のリスト
+        // [
+        //   {
+        //     book_id: 1,
+        //     rented_at: 2022-01-01
+        //     rent_until: 2022-01-01
+        //   }
+        // ]
+        val currentRentalList = db.fetch(
+            """
+                SELECT book_id, rented_at, rent_until FROM app_user_book_rental_current
+                WHERE username = ?
+            """, body["username"]
+        ).intoMaps()
+
+        var isRented = false
+        for (rental in currentRentalList) {
+            if (rental["book_id"] == body["book_id"]) {
+                isRented = true
+            }
+        }
+
+        if (!isRented) {
+            throw RuntimeException("この本は閲覧できません。")
+        }
+
+        // 今レンタル中のリスト
+        // {
+        //   book_id: 1,
+        //   title: "A Book",
+        //   content: "Once upon on a time in..."
+        // }
+        val bookContent = db.fetch(
+            """
+                SELECT book_id, title, content FROM book
+                WHERE book_id = ?
+            """, body["book_id"]
+        ).intoMaps().first()
+
+        if (bookContent == null) {
+            throw RuntimeException("本がみつかりませんでした。")
+        }
+
+        return Mono.just(bookContent)
+    }
+
+    /**
+     * bodyのサンプルデータ
+     * {
+     *   username: "g-nakagaki",
+     *   book_id: "1"
+     * }
+     */
     @PostMapping("/api/book/rent")
     fun rentBook(@RequestBody body: Map<String, String>) {
         val username = body["username"]!!
@@ -131,10 +186,12 @@ class BookRentalController(
         message.setFrom("noreply@sample-solid.com")
         message.setTo(user["email"].str())
         message.setSubject("本のレンタルが完了しました。")
-        message.setText("""
+        message.setText(
+            """
             ${username}様
             本のレンタルが完了したので読めますよ。
-        """)
+        """
+        )
         mailSender.send(message)
     }
 
