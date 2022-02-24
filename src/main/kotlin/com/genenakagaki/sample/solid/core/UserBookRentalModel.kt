@@ -5,13 +5,13 @@ import com.genenakagaki.sample.solid.int
 import com.genenakagaki.sample.solid.list
 import java.time.LocalDateTime
 
-class UserBookRentalModel(
+open class UserBookRentalModel(
     var username: String,
     var userCredit: Int,
     var currentRentalList: MutableList<UserBookRentalEntry>,
     var rentalHistory: MutableList<UserBookRentalEntry>,
 ) {
-    fun rentBook(bookId: Int, bookRentalPrice: Int) {
+    open fun rentBook(bookId: Int, bookRentalPrice: Int) {
         if (isBookRented(bookId)) {
             throw RuntimeException("既に借りてます。")
         }
