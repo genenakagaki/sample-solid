@@ -9,30 +9,27 @@ import reactor.core.publisher.Mono
 class BookRentalController(
     private val bookRentalService: BookRentalService,
 ) {
-    /**
-     * bodyのサンプルデータ
-     * {
-     *   username: "g-nakagaki",
-     *   book_id: "1"
-     * }
-     */
+
     @GetMapping("/api/book/view")
-    fun viewBook(@RequestBody body: Map<String, String>): Mono<Any?> {
-        val bookContent = bookRentalService.viewBook(body["username"], body["book_id"])
+    fun viewBook(@RequestBody body: ViewBookForm): Mono<Any> {
+        val bookContent = bookRentalService.viewBook(body.username, body.bookId)
         return Mono.just(bookContent)
     }
 
-    /**
-     * bodyのサンプルデータ
-     * {
-     *   username: "g-nakagaki",
-     *   book_id: "1"
-     * }
-     */
+    class ViewBookForm(
+        val username: String,
+        val bookId: Int,
+    )
+
     @PostMapping("/api/book/rent")
-    fun rentBook(@RequestBody body: Map<String, String>) {
-        bookRentalService.rentBook(body["username"], body["book_id"])
+    fun rentBook(@RequestBody body: RentBookForm) {
+        bookRentalService.rentBook(body.username, body.bookId)
     }
+
+    class RentBookForm(
+        val username: String,
+        val bookId: Int
+    )
 
     @ExceptionHandler(RuntimeException::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

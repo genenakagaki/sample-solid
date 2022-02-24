@@ -1,8 +1,11 @@
 package com.genenakagaki.sample.solid.repository
 
-import com.genenakagaki.sample.solid.list
+import com.genenakagaki.sample.solid.core.UserBookRentalEntry
+import com.genenakagaki.sample.solid.core.UserBookRentalModel
+import com.genenakagaki.sample.solid.int
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class UserBookRentalRepository(
@@ -10,31 +13,10 @@ class UserBookRentalRepository(
     private val userRepository: UserRepository
 ) {
 
-    /**
-     * userBookRentalData
-     * {
-     *   username: "g-nakagaki",
-     *   userCredit: 500,
-     *   currentRentalList: [
-     *     {
-     *       book_id: "1",
-     *       rented_at: "2022-01-01",
-     *       rent_until: "2022-01-08"
-     *     }
-     *   ],
-     *   rentalHistory: [
-     *     {
-     *       book_id: "1",
-     *       rented_at: "2022-01-01",
-     *       rent_until: "2022-01-08"
-     *     }
-     *   ]
-     * }
-     */
-    fun findByUsername(username: Any?): MutableMap<String, Any?>? {
-        val userData = userRepository.findByUsername(username)
+    fun findByUsername(username: String): UserBookRentalModel? {
+        val user = userRepository.findByUsername(username)
 
-        if (userData == null) {
+        if (user == null) {
             return null;
         }
 
@@ -43,54 +25,66 @@ class UserBookRentalRepository(
             SELECT book_id, rented_at, rent_until FROM app_user_book_rental_current
             WHERE username = ?
             """, username
-        ).intoMaps()
+        ).map { data ->
+            UserBookRentalEntry(
+                data.get("book_id").int(),
+                data.get("rented_at") as LocalDateTime,
+                data.get("rent_until") as LocalDateTime,
+            )
+        }
 
         val rentalHistory = db.fetch(
             """
             SELECT book_id, rented_at, rent_until FROM app_user_book_rental_history
             WHERE username = ?
         """, username
-        ).intoMaps()
+        ).map { data ->
+            UserBookRentalEntry(
+                data.get("book_id").int(),
+                data.get("rented_at") as LocalDateTime,
+                data.get("rent_until") as LocalDateTime,
+            )
+        }
 
-        return mutableMapOf(
-            "username" to username,
-            "userCredit" to userData.get("credit"),
-            "currentRentalList" to currentRentalList,
-            "rentalHistory" to rentalHistory
+        return UserBookRentalModel(
+            username,
+            user.credit,
+            currentRentalList,
+            rentalHistory
         )
     }
 
-    fun save(userBookRentalData: MutableMap<String, Any?>) {
+    fun save(model: UserBookRentalModel) {
         db.execute(
             """
             UPDATE app_user
             SET credit = ?
             WHERE username = ?
-        """, userBookRentalData["userCredit"], userBookRentalData["username"]
+        """, model.userCredit, model.username
         )
 
         db.execute(
             """
             DELETE FROM app_user_book_rental_current
             WHERE username = ?
-        """, userBookRentalData["username"]
+        """, model.username
         )
 
-        userBookRentalData["currentRentalList"].list().forEach { entry ->
+        model.currentRentalList.forEach { entry ->
             db.execute(
                 """
             INSERT INTO app_user_book_rental_current(`username`, `book_id`, `rented_at`, `rent_until`)
             VALUES (?, ?, ?, ?)
-        """, entry["username"], entry["bookId"], entry["rentedAt"], entry["rentUntil"]
+        """, model.username, entry.bookId, entry.rentedAt, entry.rentUntil
             )
         }
 
-        userBookRentalData["rentalHistory"].list().forEach { entry ->
+        model.rentalHistory.forEach { entry ->
             db.execute(
                 """
             INSERT INTO app_user_book_rental_history(`username`, `book_id`, `rented_at`, `rent_until`)
             VALUES (?, ?, ?, ?)
-        """, entry["username"], entry["bookId"], entry["rentedAt"], entry["rentUntil"]
+        """, model.username, entry.bookId, entry.rentedAt, entry.rentUntil
             )
         }
     }
