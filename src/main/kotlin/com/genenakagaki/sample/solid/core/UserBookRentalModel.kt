@@ -5,55 +5,38 @@ import com.genenakagaki.sample.solid.int
 import com.genenakagaki.sample.solid.list
 import java.time.LocalDateTime
 
-class UserBookRentalModel {
-
-    /**
-     * userBookRentalData
-     * {
-     *   username: "g-nakagaki",
-     *   userCredit: 500,
-     *   currentRentalList: [
-     *     {
-     *       bookId: "1",
-     *       rentedAt: "2022-01-01",
-     *       rentUntil: "2022-01-08"
-     *     }
-     *   ],
-     *   rentalHistory: [
-     *     {
-     *       bookId: "1",
-     *       rentedAt: "2022-01-01",
-     *       rentUntil: "2022-01-08"
-     *     }
-     *   ]
-     * }
-     */
-    fun rentBook(bookId: Any?, bookRentalPrice: Any?, userBookRentalData: MutableMap<String, Any?>) {
-        if (isBookRented(bookId, userBookRentalData)) {
+class UserBookRentalModel(
+    var username: String,
+    var userCredit: Int,
+    var currentRentalList: MutableList<UserBookRentalEntry>,
+    var rentalHistory: MutableList<UserBookRentalEntry>,
+) {
+    fun rentBook(bookId: Int, bookRentalPrice: Int) {
+        if (isBookRented(bookId)) {
             throw RuntimeException("既に借りてます。")
         }
 
-        if (userBookRentalData["userCredit"].int() < bookRentalPrice.int()) {
+        if (userCredit < bookRentalPrice) {
             throw RuntimeException("お金が足りません。")
         }
 
-        userBookRentalData["userCredit"] = userBookRentalData["userCredit"].int() - bookRentalPrice.int();
+        userCredit -= bookRentalPrice
 
         val rentedAt = LocalDateTime.now()
         val rentUntil = rentedAt.plusDays(7)
 
-        val entry = mutableMapOf(
-            "bookId" to bookId,
-            "rentedAt" to rentedAt,
-            "rentUntil" to rentUntil,
+        val entry = UserBookRentalEntry(
+            bookId,
+            rentedAt,
+            rentUntil,
         )
-        userBookRentalData["currentRentalList"].add(entry)
-        userBookRentalData["rentalHistory"].add(entry)
+        currentRentalList.add(entry)
+        rentalHistory.add(entry)
     }
 
-    fun isBookRented(bookId: Any?, userBookRentalData: MutableMap<String, Any?>): Boolean {
-        for (rental in userBookRentalData["currentRentalList"].list()) {
-            if (rental["bookId"] == bookId) {
+    fun isBookRented(bookId: Int): Boolean {
+        for (rental in currentRentalList) {
+            if (rental.bookId == bookId) {
                 return true
             }
         }

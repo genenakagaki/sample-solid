@@ -27,14 +27,17 @@ class UserNotificationService(
     private val userRepository: UserRepository,
 ) {
 
-    fun notifyUser(username: Any?, emailTemplate: EmailTemplateType) {
-        val userData = userRepository.findByUsername(username)
+    fun notifyUser(username: String, emailTemplate: EmailTemplateType) {
+        val user = userRepository.findByUsername(username)
+        if (user == null) {
+            throw RuntimeException("ユーザーがみつかりませんでした。")
+        }
 
         val message = SimpleMailMessage()
         message.setFrom(emailTemplate.from)
-        message.setTo(userData["email"].str())
+        message.setTo(user.email)
         message.setSubject(emailTemplate.subject)
-        val body = emailTemplate.body.replace("###USERNAME###", username.str())
+        val body = emailTemplate.body.replace("###USERNAME###", username)
         message.setText(body)
 
         mailSender.send(message)
