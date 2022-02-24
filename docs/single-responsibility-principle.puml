@@ -1,49 +1,17 @@
 @startuml
-title Single responsibility
+title SRP導入からの変更（全体像）
 
 package controller <<責任：HTTPの処理>> {
-    class BookRentalController {
-        責任：本のレンタル関連のAPIの処理
-        + rentBook()
-    }
 }
-
-package service <<責任：ビジネスロジックとデータのつなぎ合わせ>> {
-    class BookRentalService {
-    + rentBook()
-    }
-
-    class UserNotificationService {
-    + notifyUser()
-    }
+package service <<責任：処理を実行するためのコーディネーション>> {
 }
-
 package repository <<責任：DB関連の処理>> {
-    class BookRepository {
-    + findPriceById()
-    }
-
-    class UserBookRentalRepository {
-    + findByUsername()
-    }
-
-    class UserRepository {
-    + findByUsername()
-    }
 }
-
 package core <<責任：ビジネスロジックの処理>> {
-    class UserBookRentalModel {
-    + rentBook()
-    }
 }
 
-BookRentalController ..> BookRentalService: uses
-BookRentalService ..> BookRepository: uses
-BookRentalService ..> UserRepository: uses
-BookRentalService ..> UserBookRentalRepository: uses
-UserNotificationService ..> UserRepository: uses
-UserNotificationService <. BookRentalService: uses
-BookRentalService .> UserBookRentalModel: uses
+controller --> service
+service --> repository
+service -> core
 
 @enduml
