@@ -7,10 +7,12 @@ actor :ユーザー: as user
 actor :定期実行システム: as batch
 rectangle "システム" {
     usecase "本のレンタル開始" as rentBook
+    usecase "本の閲覧" as viewBook
     usecase "本のレンタル終了" as endBookRental
 }
 
 user --> rentBook
+user --> viewBook
 batch --> endBookRental
 
 @enduml

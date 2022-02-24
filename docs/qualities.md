@@ -7,7 +7,8 @@ Maintainability
     - Layered architecture
   - Situations: 
     - Testability
-    - Reusability
+    - Reusability(repository)
+    - Can develop on abstractions(APIエンドポイントとかDBとかあとでできる)
     - Maintainability: 変えてないことろもチェックする必要がある
 - Open Closed Principle
   - is the class open for extension
