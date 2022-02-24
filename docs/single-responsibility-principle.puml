@@ -1,0 +1,17 @@
+@startuml
+title SRP導入からの変更（全体像）
+
+package controller <<責任：HTTPの処理>> {
+}
+package service <<責任：処理を実行するためのコーディネーション>> {
+}
+package repository <<責任：DB関連の処理>> {
+}
+package core <<責任：ビジネスロジックの処理>> {
+}
+
+controller --> service
+service --> repository
+service -> core
+
+@enduml

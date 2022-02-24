@@ -1,0 +1,58 @@
+@startuml
+title SRP導入からの変更（ファイルごと）
+
+package controller <<責任：HTTPの処理>> {
+    class BookRentalController {
+        責任：本のレンタル関連のAPIの処理
+        + rentBook()
+        + viewBook()
+    }
+}
+
+package service <<責任：処理を実行するためのコーディネーション>> {
+    class BookRentalService {
+    責任：本のレンタル処理を実行させる
+    + viewBook()
+    + rentBook()
+    }
+
+    class UserNotificationService {
+    責任：ユーザーへの通知処理を実行させる
+    + notifyUser()
+    }
+}
+
+package repository <<責任：DB関連の処理>> {
+    class BookRepository {
+    責任：本関連のDB処理
+    + findPriceById()
+    }
+
+    class UserBookRentalRepository {
+    責任：ユーザーの本のレンタル関連のDB処理
+    + findByUsername()
+    }
+
+    class UserRepository {
+    責任：ユーザー関連のDB処理
+    + findByUsername()
+    }
+}
+
+package core <<責任：ビジネスロジックの処理>> {
+    class UserBookRentalModel {
+    責任：本を借りるときのビジネスロジック
+    + isBookRented()
+    + rentBook()
+    }
+}
+
+BookRentalController ..> BookRentalService: uses
+BookRentalService ..> BookRepository: uses
+BookRentalService ..> UserRepository: uses
+BookRentalService ..> UserBookRentalRepository: uses
+UserNotificationService ..> UserRepository: uses
+UserNotificationService <. BookRentalService: uses
+BookRentalService .> UserBookRentalModel: uses
+
+@enduml

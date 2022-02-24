@@ -52,6 +52,14 @@ fun Any?.str(): String {
 	return this as String
 }
 
+fun Any?.add(item: Any) {
+	(this as MutableList<*>).add(item)
+}
+
+fun Any?.list(): List<Map<String, Any>> {
+	return this as List<Map<String, Any>>
+}
+
 fun main(args: Array<String>) {
 	runApplication<SolidApplication>(*args)
 }
