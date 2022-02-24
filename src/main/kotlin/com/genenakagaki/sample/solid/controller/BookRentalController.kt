@@ -9,6 +9,18 @@ import reactor.core.publisher.Mono
 class BookRentalController(
     private val bookRentalService: BookRentalService,
 ) {
+    /**
+     * bodyのサンプルデータ
+     * {
+     *   username: "g-nakagaki",
+     *   book_id: "1"
+     * }
+     */
+    @GetMapping("/api/book/view")
+    fun viewBook(@RequestBody body: Map<String, String>): Mono<Any?> {
+        val bookContent = bookRentalService.viewBook(body["username"], body["book_id"])
+        return Mono.just(bookContent)
+    }
 
     /**
      * bodyのサンプルデータ

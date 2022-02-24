@@ -12,20 +12,37 @@ class BookRentalService(
     private val userNotificationService: UserNotificationService,
 ) {
 
-    fun rentBook(username: Any?, bookId: Any?) {
-        val bookPrice = bookRepository.findPriceById(bookId)
-        if (bookPrice == null) {
-            throw RuntimeException("本がみつかりませんでした。")
-        }
+    fun viewBook(username: Any?, bookId: Any?): Any {
+        val userBookRentalData = findUserBookRentalModel(username)
+        UserBookRentalModel().isBookRented(bookId, userBookRentalData)
 
-        val userBookRentalData = userBookRentalRepository.findByUsername(username)
-        if (userBookRentalData == null) {
-            throw RuntimeException("ユーザーが見つかりませんでした。")
-        }
+        return bookRepository.findContentById(bookId)
+    }
+
+    fun rentBook(username: Any?, bookId: Any?) {
+        val bookPrice = findBookPrice(bookId)
+        val userBookRentalData = findUserBookRentalModel(username)
 
         UserBookRentalModel().rentBook(bookId, bookPrice["rental_price"], userBookRentalData)
 
         userBookRentalRepository.save(userBookRentalData);
         userNotificationService.notifyUser(username, EmailTemplateType.RENTAL_COMPLETE)
+    }
+
+    private fun findBookPrice(bookId: Any?): MutableMap<String, Any?> {
+        val bookPrice = bookRepository.findPriceById(bookId)
+        if (bookPrice == null) {
+            throw RuntimeException("本がみつかりませんでした。")
+        }
+
+        return bookPrice
+    }
+
+    private fun findUserBookRentalModel(username: Any?): MutableMap<String, Any?> {
+        val userBookRentalData = userBookRentalRepository.findByUsername(username)
+        if (userBookRentalData == null) {
+            throw RuntimeException("ユーザーが見つかりませんでした。")
+        }
+        return userBookRentalData
     }
 }

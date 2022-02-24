@@ -21,4 +21,11 @@ class BookRepository(
         """, bookId
         ).intoMaps().first()
 
+    fun findContentById(bookId: Any?) =
+        db.fetch(
+            """
+                SELECT book_id, title, content FROM book
+                WHERE book_id = ?
+            """, bookId
+        ).intoMaps().first()
 }

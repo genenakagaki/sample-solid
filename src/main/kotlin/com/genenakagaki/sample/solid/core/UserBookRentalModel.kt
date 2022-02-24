@@ -51,7 +51,7 @@ class UserBookRentalModel {
         userBookRentalData["rentalHistory"].add(entry)
     }
 
-    private fun isBookRented(bookId: Any?, userBookRentalData: MutableMap<String, Any?>): Boolean {
+    fun isBookRented(bookId: Any?, userBookRentalData: MutableMap<String, Any?>): Boolean {
         for (rental in userBookRentalData["currentRentalList"].list()) {
             if (rental["bookId"] == bookId) {
                 return true
